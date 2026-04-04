@@ -1,0 +1,39 @@
+# ========================
+# Backend (Laravel)
+# ========================
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/.env.backup
+backend/.env.production
+backend/database/database.sqlite
+backend/database/*.sqlite
+backend/storage/app/private/uploads/
+backend/storage/logs/*.log
+!backend/storage/logs/.gitkeep
+backend/bootstrap/cache/*.php
+!backend/bootstrap/cache/.gitkeep
+backend/storage/framework/views/*.php
+!backend/storage/framework/views/.gitkeep
+
+# ========================
+# Frontend
+# ========================
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/out/
+
+# ========================
+# IDE & OS
+# ========================
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
