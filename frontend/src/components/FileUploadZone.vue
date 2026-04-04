@@ -16,9 +16,18 @@
       @change="onInputChange"
     />
     <div class="zone-inner">
-      <div class="icon">↑</div>
-      <p>Drag & drop files here or <strong>click to browse</strong></p>
-      <p class="hint">PDF, DOCX, PNG, JPG, ODT · max 5 files · max 20 MB each</p>
+      <div class="upload-icon" :class="{ pulse: dragging }">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 16 12 12 8 16"/>
+          <line x1="12" y1="12" x2="12" y2="21"/>
+          <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+        </svg>
+      </div>
+      <p class="zone-title">
+        <span v-if="dragging">Drop your files here</span>
+        <span v-else>Drag & drop files or <strong>browse</strong></span>
+      </p>
+      <p class="hint">PDF, DOCX, PNG, JPG, ODT &nbsp;·&nbsp; max 5 files &nbsp;·&nbsp; 20 MB each</p>
       <p v-if="validationError" class="error-msg">{{ validationError }}</p>
     </div>
   </div>
@@ -43,12 +52,8 @@ function validate(files) {
   if (files.length === 0)  return 'No files selected.'
   if (files.length > 5)    return 'Maximum 5 files at once.'
   for (const f of files) {
-    if (!ALLOWED_TYPES.includes(f.type)) {
-      return `"${f.name}" is not an allowed file type.`
-    }
-    if (f.size > 20 * 1024 * 1024) {
-      return `"${f.name}" exceeds the 20 MB limit.`
-    }
+    if (!ALLOWED_TYPES.includes(f.type)) return `"${f.name}" is not an allowed file type.`
+    if (f.size > 20 * 1024 * 1024)       return `"${f.name}" exceeds the 20 MB limit.`
   }
   return null
 }
@@ -68,20 +73,46 @@ function onInputChange(e) { handle(e.target.files); e.target.value = '' }
 
 <style scoped>
 .upload-zone {
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 32px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 16px;
+  padding: 36px 24px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: all 0.2s ease;
   background: #fff;
 }
-.upload-zone:hover, .upload-zone.dragging {
-  border-color: #6366f1;
-  background: #f5f3ff;
+.upload-zone:hover {
+  border-color: #a5b4fc;
+  background: #fafafe;
 }
-.icon { font-size: 32px; margin-bottom: 8px; color: #6366f1; }
-p    { font-size: 14px; color: #64748b; }
-.hint { font-size: 12px; margin-top: 4px; }
-.error-msg { margin-top: 8px; }
+.upload-zone.dragging {
+  border-color: #6366f1;
+  background: #eef2ff;
+  transform: scale(1.01);
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+}
+
+.zone-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+.upload-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #eef2ff;
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+}
+.upload-zone:hover .upload-icon,
+.dragging .upload-icon { background: #e0e7ff; }
+
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.pulse { animation: pulse 0.8s ease-in-out infinite; }
+
+.zone-title { font-size: 15px; color: #475569; font-weight: 500; }
+.zone-title strong { color: #6366f1; font-weight: 600; }
+.hint { font-size: 12px; color: #94a3b8; }
 </style>
