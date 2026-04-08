@@ -28,7 +28,7 @@ A full-stack file management application that allows users to securely upload, b
 |--------|--------|
 | **Laravel 11** | Provides routing, validation, Eloquent ORM, and file storage out of the box, reducing boilerplate for a REST API |
 | **Laravel Sanctum** | Lightweight token-based authentication suited for SPA + API setups without the overhead of OAuth |
-| **SQLite** | Zero-configuration database that fits a single-user or small-scale file manager — no separate DB server needed |
+| **MySQL 8.0** | Reliable relational database with a dedicated container, suitable for multi-user and production-ready setups |
 | **Local private disk** | Uploaded files are stored in `storage/app/private/uploads/` outside the public directory, preventing direct URL access |
 | **Per-user file isolation** | Files are stored under a subdirectory named after the user's ID, so each user only ever accesses their own files |
 
@@ -46,12 +46,12 @@ A full-stack file management application that allows users to securely upload, b
 The app runs as two containers behind a shared network:
 
 ```
-Browser → nginx:8000 → PHP-FPM (app:9000)
+Browser → nginx:8000 → PHP-FPM (app:9000) → MySQL (db:3306)
 ```
 
 - **nginx** serves as the reverse proxy and forwards `.php` requests to the `app` container via FastCGI
-- **app** runs PHP-FPM 8.2, installs Composer dependencies at build time, and runs migrations on startup
-- No database container is needed — SQLite lives inside the `app` container's volume
+- **app** runs PHP-FPM 8.4, installs Composer dependencies at build time, and runs migrations on startup
+- **db** runs MySQL 8.0 with a persistent named volume (`db_data`)
 
 ---
 
@@ -111,7 +111,7 @@ The API will be available at `http://localhost:8000/api`.
 
 ### Option 2 — Manual
 
-**Requirements:** PHP 8.2+, Composer, Node.js 18+
+**Requirements:** PHP 8.4+, Composer, Node.js 18+, MySQL 8.0
 
 #### Backend
 
@@ -125,8 +125,7 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
-# Create the SQLite database and run migrations
-touch database/database.sqlite
+# Run migrations (ensure MySQL is running and .env DB settings are configured)
 php artisan migrate
 
 # Start the dev server
